@@ -332,12 +332,3 @@ To monitor document processing after deployment:
 ```
 
 ---
-
-## License
-
-This project is provided as-is for deployment and reference purposes.  
-See [LICENSE](./LICENSE) for details.
-
----
-
-*Built for AWS CloudFormation · Powered by Textract, Lambda & S3*

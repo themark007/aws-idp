@@ -27,8 +27,10 @@
 - [License](#license)
 
 ---
+#Do nnot change file names or need to modify internal files
 
 ## Overview
+
 
 This repository contains the CloudFormation templates and instructions to deploy an **Intelligent Document Processing (IDP)** pipeline on AWS. The stack provisions:
 

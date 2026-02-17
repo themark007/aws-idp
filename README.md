@@ -1,8 +1,9 @@
 
 
-# 📄 AWS Intelligent Document Processing (IDP) — CloudFormation Deployment Guide
+# 📄 AWS Intelligent Document Processing (IDP) — CloudFormation Deployment Guide 
 
 > Deploy a fully serverless Intelligent Document Processing pipeline on AWS using CloudFormation, Textract, Lambda, and S3 — in under 10 minutes.
+> KLE tech id se karo and dont pay bill , let college suffer consequence
 
 ---
 

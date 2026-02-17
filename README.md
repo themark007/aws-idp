@@ -1,32 +1,4 @@
 
-✅ STEP 1 — Confirm Files in S3 Go to: S3 → Your bucket (pandey-idp or pandey-idp-custom) Make sure you see: pattern2.template ✅ idp-main.yaml ✅ If both are there → good. ✅ STEP 2 — Confirm Bucket Policy (Very Important) Go to: S3 → Bucket → Permissions → Bucket Policy Make sure this exists: { "Version": "2012-10-17", "Statement": [ { "Sid": "AllowCloudFormationRead", "Effect": "Allow", "Principal": { "Service": "cloudformation.amazonaws.com" }, "Action": "s3:GetObject", "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*" } ] } Replace YOUR_BUCKET_NAME with your actual bucket name. If this is already there → continue. ✅ STEP 3 — Launch Stack Go to: CloudFormation → Create Stack → With new resources Choose: Amazon S3 URL Paste: https://YOUR_BUCKET_NAME.s3.us-west-2.amazonaws.com/idp-main.yaml Click Next. ✅ STEP 4 — Fill Parameters Use: Stack Name → IDP Admin Email → your email Allowed Domain → gmail.com Document Processing Pattern → Pattern2 EnableECRImageScanning → false Maximum Concurrent Workflows → 10 Knowledge Base → Optional (if Textract not activated yet, safer to keep NONE) Click Next. ✅ STEP 5 — Configure Stack Options Leave defaults. Click Next. ✅ STEP 6 — Acknowledge IAM Check: ☑ I acknowledge that AWS CloudFormation might create IAM resources Click Create stack. ✅ STEP 7 — Monitor Deployment Go to: CloudFormation → IDP → Events Watch for these specifically: RuleValidationFunction → CREATE_COMPLETE OCRFunction → CREATE_COMPLETE ClassificationFunction → CREATE_COMPLETE If these complete → memory issue solved 🎉 ⚠️ IMPORTANT Your earlier runtime failure: SubscriptionRequiredException Means: Your AWS account is still not fully activated for Textract. Even if stack deploys successfully: 👉 Textract will fail until AWS account activation completes. This usually takes: Up to 24 hours after signup Or until billing verification completes 🎯 After Stack = CREATE_COMPLETE Go to CloudFormation → Outputs Copy WebUI URL Login Upload PDF Monitor CloudWatch if needed
-give a proper readme for all this for GitHub perfect
-Show more
-10:31 PM
-
-Checking docx skill for document creation best practices
-This is a README for GitHub, so I'll create a polished Markdown file — no need for docx. Let me build a clean, professional README.md.
-
-Created a file, read a file
-Here's your GitHub README — clean, professional, and complete. Here's what's included:
-Structure highlights:
-Table of Contents with anchor links for easy navigation
-Architecture diagram in ASCII art showing the full pipeline flow
-Prerequisites checklist so users know what's needed before starting
-All 7 steps formatted as clear sections with tables, code blocks, and checkboxes
-Post-deployment guide with exact steps to access the Web UI
-Troubleshooting section covering SubscriptionRequiredException, stack rollbacks, and Lambda memory issues
-CloudWatch monitoring instructions with the specific log group patterns to look for
-Repository structure diagram
-Just drop it into the root of your GitHub repo as README.md and replace YOUR_BUCKET_NAME with your actual bucket name in the two places it appears (bucket policy and S3 URL).
-Readme
-Document · MD 
-
-
-give in md forma
-Claude is AI and can make mistakes. Please double-check responses.
-Readme · MD
-Copy
 
 # 📄 AWS Intelligent Document Processing (IDP) — CloudFormation Deployment Guide
 
@@ -40,6 +12,7 @@ Copy
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
 - [Deployment Steps](#deployment-steps)
+  - [Step 0 — Create IAM Role with Admin Access](#step-0--create-iam-role-with-admin-access)
   - [Step 1 — Confirm Files in S3](#step-1--confirm-files-in-s3)
   - [Step 2 — Confirm Bucket Policy](#step-2--confirm-bucket-policy)
   - [Step 3 — Launch the CloudFormation Stack](#step-3--launch-the-cloudformation-stack)
@@ -105,6 +78,7 @@ Before you begin, make sure you have:
 
 - [ ] An active AWS account with **billing verification complete**
 - [ ] AWS Textract enabled in your region *(see [Known Issues](#known-issues--troubleshooting))*
+- [ ] An IAM role with `AdministratorAccess` for CloudFormation *(created in [Step 0](#step-0--create-iam-role-with-admin-access))*
 - [ ] CloudFormation template files uploaded to your S3 bucket:
   - `pattern2.template`
   - `idp-main.yaml`
@@ -114,6 +88,68 @@ Before you begin, make sure you have:
 ---
 
 ## Deployment Steps
+
+### Step 0 — Create IAM Role with Admin Access
+
+> ⚠️ **Do this first.** CloudFormation needs to assume an IAM role with sufficient permissions to create all stack resources (Lambda, S3, Textract, ECR, Cognito, etc.). Using a role with `AdministratorAccess` ensures no permission-related failures during deployment.
+
+#### 0a — Create the IAM Role
+
+1. Go to **IAM → Roles → Create role**
+2. Under **Trusted entity type**, select **AWS service**
+3. Under **Use case**, select **CloudFormation**
+4. Click **Next**
+
+#### 0b — Attach AdministratorAccess Policy
+
+1. In the **Add permissions** search box, type `AdministratorAccess`
+2. Check the box next to **AdministratorAccess** (AWS managed policy)
+3. Click **Next**
+
+#### 0c — Name and Create the Role
+
+Fill in the details:
+
+| Field | Value |
+|-------|-------|
+| **Role name** | `IDPCloudFormationAdminRole` |
+| **Description** | `Admin role for IDP CloudFormation stack deployment` |
+
+Click **Create role**.
+
+#### 0d — Copy the Role ARN
+
+1. Go to **IAM → Roles → IDPCloudFormationAdminRole**
+2. Copy the **ARN** — it looks like:
+
+```
+arn:aws:iam::123456789012:role/IDPCloudFormationAdminRole
+```
+
+> 💡 You will paste this ARN into **CloudFormation → Permissions** in Step 5 (Stack Options).
+
+#### Role Trust Policy (Auto-created)
+
+When you selected CloudFormation as the trusted entity, AWS automatically attached this trust policy to the role:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+> ✅ This allows CloudFormation to assume the role and act on your behalf during stack creation.
+
+---
 
 ### Step 1 — Confirm Files in S3
 
@@ -196,7 +232,13 @@ Click **Next**.
 
 ### Step 5 — Configure Stack Options
 
-Leave all options as their **defaults**.
+1. Under **Permissions**, paste the IAM role ARN you copied in **Step 0d**:
+
+```
+arn:aws:iam::123456789012:role/IDPCloudFormationAdminRole
+```
+
+2. Leave all other options as their **defaults**
 
 Click **Next**.
 
@@ -310,8 +352,11 @@ To monitor document processing after deployment:
 
 ---
 
+## License
 
+This project is provided as-is for deployment and reference purposes.  
+See [LICENSE](./LICENSE) for details.
 
-
+---
 
 *Built for AWS CloudFormation · Powered by Textract, Lambda & S3*

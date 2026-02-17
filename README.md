@@ -41,7 +41,7 @@ This repository contains the CloudFormation templates and instructions to deploy
 **S3 templates required:**
 ```
 pandey-idp (or pandey-idp-custom)
-├── pattern2.template
+├── nigga.template
 └── idp-main.yaml
 ```
 
@@ -81,7 +81,7 @@ Before you begin, make sure you have:
 - [ ] AWS Textract enabled in your region *(see [Known Issues](#known-issues--troubleshooting))*
 - [ ] An IAM role with `AdministratorAccess` for CloudFormation *(created in [Step 0](#step-0--create-iam-role-with-admin-access))*
 - [ ] CloudFormation template files uploaded to your S3 bucket:
-  - `pattern2.template`
+  - `nigga.template`
   - `idp-main.yaml`
 - [ ] IAM permissions to create stacks, Lambda functions, and IAM roles
 - [ ] S3 bucket in region `us-west-2` (or update the URL accordingly)
@@ -160,7 +160,7 @@ When you selected CloudFormation as the trusted entity, AWS automatically attach
 
 | File | Status |
 |------|--------|
-| `pattern2.template` | ✅ Required |
+| `nigga.template` | ✅ Required |
 | `idp-main.yaml` | ✅ Required |
 
 > If either file is missing, upload it before proceeding.
@@ -220,7 +220,7 @@ Fill in the parameters as follows:
 | **Stack Name** | `IDP` |
 | **Admin Email** | `your@email.com` |
 | **Allowed Domain** | `gmail.com` (or your domain) |
-| **Document Processing Pattern** | `Pattern2` |
+| **Document Processing Pattern** | `nigga` |
 | **EnableECRImageScanning** | `false` |
 | **Maximum Concurrent Workflows** | `10` |
 | **Knowledge Base** | `NONE` *(safer if Textract is not yet activated)* |
@@ -328,7 +328,7 @@ To monitor document processing after deployment:
 ```
 .
 ├── idp-main.yaml           # Main CloudFormation template (entry point)
-├── pattern2.template       # Nested stack template for Pattern 2 processing
+├── nigga.template       # Nested stack template for Pattern 2 processing
 └── README.md               # This file
 ```
 

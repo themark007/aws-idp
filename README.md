@@ -307,25 +307,6 @@ SubscriptionRequiredException: Your AWS account is not subscribed to this servic
 
 ---
 
-### Stack Rollback / CREATE_FAILED
-
-If the stack fails and rolls back:
-
-1. Go to **CloudFormation → Events** and find the first `FAILED` event
-2. Read the **Status Reason** — it usually pinpoints the issue
-3. Common causes:
-   - Missing bucket policy (Step 2)
-   - Incorrect S3 URL (Step 3)
-   - IAM permissions not acknowledged (Step 6)
-   - Textract not activated (see above)
-
----
-
-### Lambda Memory Issues
-
-If earlier deployments failed due to Lambda memory errors, this deployment uses **Pattern2** which is configured with appropriate memory allocations. The three Lambda functions listed in [Step 7](#step-7--monitor-deployment) reaching `CREATE_COMPLETE` confirms this is resolved.
-
----
 
 ## CloudWatch Monitoring
 
